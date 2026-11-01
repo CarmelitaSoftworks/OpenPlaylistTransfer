@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenPlaylistTransfer — Pasa tus playlists entre Spotify, Tidal, YouTube Music y Apple Music</title>
+<meta name="description" content="Transfiere playlists entre Spotify, Tidal, YouTube Music y Apple Music desde tu navegador. Gratis, de código abierto y sin servidores intermedios.">
+<meta name="theme-color" content="#0e0f12">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2317191e'/%3E%3Cpath d='M18 24h22l-6-6M46 40H24l6 6' stroke='%2333c3ff' stroke-width='5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>OpenPlaylist<span>Transfer</span></h1>
+      <p class="sub">Pasa tus playlists entre servicios de música desde tu navegador. Gratis, de código abierto y sin servidores intermedios.</p>
+    </div>
+    <a class="kofi" href="https://ko-fi.com/carmelitasoftworks" target="_blank" rel="noopener">☕ Apóyame en Ko-fi</a>
+  </header>
+
+  <!-- 1 -->
+  <section class="card">
+    <h2><span class="step">1</span> ¿Desde dónde y hacia dónde?</h2>
+    <div class="label">Desde</div>
+    <div class="chips" id="srcPick"></div>
+    <div class="swaprow"><button class="btn ghost small" id="swap" type="button" title="Intercambiar">⇅ Intercambiar</button></div>
+    <div class="label">Hacia</div>
+    <div class="chips" id="dstPick"></div>
+    <p id="sameWarn" class="notice hidden">El origen y el destino son el mismo servicio.</p>
+  </section>
+
+  <!-- 2 -->
+  <section class="card" id="connCard">
+    <h2><span class="step">2</span> Conecta tus cuentas</h2>
+    <p class="mute small">Cada servicio pide registrar una app gratuita para obtener tu propia clave. Usa esta dirección en todos:</p>
+    <label for="redir">Redirect URI</label>
+    <div class="copybox"><input id="redir" readonly><button class="btn small" id="copyRedir" type="button">Copiar</button></div>
+    <p class="mute small">Origen (para Google): <code id="origin"></code></p>
+    <div id="conns"></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card">
+    <h2><span class="step">3</span> Elige la playlist</h2>
+    <div id="listSrc">
+      <label for="plSelect">Tus playlists</label>
+      <select id="plSelect" disabled><option>Conecta el servicio de origen</option></select>
+      <label for="plUrl">…o pega el link</label>
+      <input id="plUrl" spellcheck="false" placeholder="https://open.spotify.com/playlist/…">
+    </div>
+    <div id="textSrc" class="hidden">
+      <label for="plText">Una canción por línea (<code>Artista - Título</code>) o un CSV</label>
+      <textarea id="plText" rows="7" spellcheck="false" placeholder="Daft Punk - One More Time&#10;Justice - D.A.N.C.E."></textarea>
+      <label class="filebtn">Subir CSV<input type="file" id="plFile" accept=".csv,.txt,text/csv,text/plain"></label>
+    </div>
+    <label for="plName">Nombre de la nueva playlist</label>
+    <input id="plName" placeholder="Igual que la original">
+    <button class="btn go" id="go" type="button" disabled>Transferir</button>
+    <div id="resumeBox" class="notice hidden">
+      Hay una transferencia sin terminar: <b id="resumeName"></b>
+      <div class="row"><button class="btn small" id="resumeBtn" type="button">Continuar</button><button class="btn ghost small" id="discardBtn" type="button">Descartar</button></div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="card hidden" id="progCard">
+    <h2><span class="step">4</span> <span id="progTitle">Transfiriendo…</span></h2>
+    <div class="bar"><i id="barFill"></i></div>
+    <div class="mute small" id="progText"></div>
+    <div class="stats">
+      <div><b class="ok" id="nOk">0</b><span>encontradas</span></div>
+      <div><b class="bad" id="nMiss">0</b><span>no encontradas</span></div>
+      <div><b id="nTotal">0</b><span>total</span></div>
+    </div>
+    <div class="row">
+      <button class="btn" id="stopBtn" type="button">Pausar</button>
+      <a class="btn ghost hidden" id="dstLink" target="_blank" rel="noopener">Abrir</a>
+    </div>
+    <div id="missBox" class="row hidden">
+      <button class="btn small" id="copyMiss" type="button">Copiar no encontradas</button>
+      <button class="btn small" id="dlMiss" type="button">Descargar CSV</button>
+    </div>
+    <div id="log" aria-live="polite"></div>
+  </section>
+
+  <footer>
+    <p>Todo ocurre en tu navegador: tus claves y sesiones se guardan solo en este dispositivo y nunca pasan por un servidor nuestro.</p>
+    <p>¿Deezer, SoundCloud, Amazon Music o Qobuz? No tienen API abierta para apps nuevas. Usa <b>Texto / CSV</b> como puente.</p>
+    <p><a href="https://github.com/CarmelitaSoftworks/OpenPlaylistTransfer" target="_blank" rel="noopener">Código fuente (GPL-3.0)</a> · Hecho por Carmelita Softworks · <a href="https://ko-fi.com/carmelitasoftworks" target="_blank" rel="noopener">Ko-fi</a></p>
+  </footer>
+</main>
+
+<div id="toast" role="status"></div>
+<div id="confirm" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-box">
+    <p id="confirmMsg"></p>
+    <div class="row"><button class="btn" id="confirmYes" type="button">Sí</button><button class="btn ghost" id="confirmNo" type="button">No</button></div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
