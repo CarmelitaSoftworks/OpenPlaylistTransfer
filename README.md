@@ -1,5 +1,9 @@
 # OpenPlaylistTransfer
 
+**Español** · [English](README.en.md)
+
+> 📖 **¿Primera vez? Sigue el [tutorial paso a paso](docs/TUTORIAL.md).** · *First time? Read the [step-by-step tutorial](docs/TUTORIAL.en.md).*
+
 Transfiere playlists entre **Spotify**, **Tidal**, **YouTube Music** y **Apple Music** directo desde tu navegador.
 Gratis, de código abierto y **sin servidores intermedios**: la página habla directamente con la API oficial de cada servicio usando tus propias claves de desarrollador.
 
@@ -32,6 +36,8 @@ Gratis, de código abierto y **sin servidores intermedios**: la página habla di
 7. Al final puedes copiar o descargar en CSV la lista de canciones no encontradas.
 
 ## Configuración (una sola vez)
+
+Resumen rápido. Los pasos detallados, qué poner en cada campo y la solución de problemas están en el **[tutorial](docs/TUTORIAL.md)**.
 
 La **Redirect URI** es la dirección de la página, por ejemplo `https://carmelitasoftworks.github.io/OpenPlaylistTransfer/`. La propia app la muestra con un botón para copiarla.
 
@@ -79,7 +85,7 @@ css/style.css
 js/core.js            OAuth/PKCE, HTTP con reintentos, coincidencia de canciones, CSV
 js/app.js             interfaz y motor de transferencia (con reanudación)
 js/providers/*.js     un módulo por servicio (misma interfaz)
-docs/apple-developer-token.mjs
+docs/                 tutoriales (ES/EN) y script del token de Apple
 ```
 
 Para agregar un servicio, crea un módulo en `js/providers/` con `listPlaylists`, `getTracks`, `createPlaylist`, `findMany` y `addTracks`, y regístralo en `js/app.js`.
